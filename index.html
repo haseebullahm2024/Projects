@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Terra Verse – Coming Soon</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Official Coming Soon countdown site for an upcoming epic game by Haseebullah Mohmand.">
+<meta name="theme-color" content="#00eaff">
+
+<!-- FONTS (system fallback only to keep offline-safe) -->
+<style>
+:root {
+  --accent: #00eaff;
+  --accent-glow: rgba(0,234,255,.75);
+  --bg-dark: #0a0f16;
+  --bg-card: rgba(255,255,255,.06);
+  --text-main: #e3f7ff;
+  --text-dim: #8fbccc;
+  --danger: #ff3d5a;
+  --success: #3dff9a;
+  --warn: #ffb23d;
+  --radius: 16px;
+  --trans-fast: 0.15s;
+  --trans-med: 0.35s;
+  --grid-max: 1200px;
+}
+html,body {
+  margin:0; padding:0;
+  width:100%; height:100%;
+  background:var(--bg-dark);
+  color:var(--text-main);
+  font-family: "Segoe UI", "Roboto", sans-serif;
+}
+body {
+  overflow-x:hidden;
+  position:relative;
+}
+
+/* Particle canvas full screen */
+#bgCanvas {
+  position:fixed;
+  inset:0;
+  width:100%;
+  height:100%;
+  z-index:-1;
+}
+
+/* Top bar */
+.topbar {
+  width:100%;
+  padding:8px 16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  background:rgba(0,0,0,.35);
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+  box-shadow:0 0 12px var(--accent-glow);
+}
+.topbar .flag {
+  display:inline-block;
+  width:48px; height:32px;
+  position:relative;
+  border:1px solid var(--text-dim);
+  box-shadow:0 0 8px var(--accent-glow);
+}
+.flag::before,
+.flag::after,
+.flag span {
+  content:"";
+  position:absolute;
+  top:0; bottom:0;
+}
+.flag::before {
+  left:0; width:33.4%;
+  background:#000;
+}
+.flag span {
+  left:33.4%; width:33.3%;
+  background:#d21034; /* red */
+}
+.flag::after {
+  right:0; width:33.3%;
+  background:#007a3d; /* green */
+}
+
+.topbar h1 {
+  margin:0;
+  font-size:clamp(1.25rem, 2.5vw, 2rem);
+  letter-spacing:.5px;
+  text-shadow:0 0 8px var(--accent-glow);
+}
+.topbar .contact {
+  font-size:.85rem;
+  color:var(--text-dim);
+}
+.topbar .contact a {
+  color:var(--accent);
+  text-decoration:none;
+}
+.topbar .contact a:hover {
+  text-decoration:underline;
+}
+
+/* Hero Section */
+.hero {
+  padding:120px 16px 80px;
+  text-align:center;
+  max-width:var(--grid-max);
+  margin-inline:auto;
+}
+.hero-title {
+  font-size:clamp(2.5rem, 5vw, 4rem);
+  margin:0 0 16px;
+  font-weight:700;
+  line-height:1.1;
+  animation:glitch 4s infinite;
+}
+.hero-sub {
+  font-size:clamp(1.1rem, 2.5vw, 1.5rem);
+  margin:0 0 48px;
+  color:var(--text-dim);
+}
+
+/* Countdown Grid */
+.countdown-wrapper {
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(140px,1fr));
+  gap:16px;
+  max-width:600px;
+  margin:0 auto 48px;
+}
+.timer-box {
+  background:var(--bg-card);
+  border:1px solid var(--accent-glow);
+  border-radius:var(--radius);
+  padding:24px 8px;
+  box-shadow:0 0 20px var(--accent-glow);
+  transition:transform var(--trans-fast);
+}
+.timer-box:hover {
+  transform:scale(1.05);
+}
+.timer-value {
+  font-size:clamp(2rem,4vw,3rem);
+  font-weight:700;
+  display:block;
+}
+.timer-label {
+  font-size:.9rem;
+  color:var(--text-dim);
+}
+
+/* Elapsed & Progress */
+.progress-section {
+  max-width:600px;
+  margin:0 auto;
+  text-align:center;
+  margin-bottom:64px;
+}
+.progress-section h3 {
+  margin:0 0 8px;
+  font-size:1.2rem;
+}
+.progress-bar-wrap {
+  width:100%; height:12px;
+  background:rgba(255,255,255,.15);
+  border-radius:8px;
+  overflow:hidden;
+  position:relative;
+  box-shadow:0 0 10px var(--accent-glow) inset;
+}
+.progress-bar {
+  height:100%;
+  width:0%;
+  background:var(--accent);
+  box-shadow:0 0 10px var(--accent-glow);
+  transition:width var(--trans-med) linear;
+}
+.progress-percent {
+  margin-top:8px;
+  font-size:1rem;
+}
+
+/* About / Credits */
+.about {
+  max-width:var(--grid-max);
+  margin:0 auto 120px;
+  padding:0 16px;
+  text-align:center;
+}
+.about h2 {
+  margin-bottom:16px;
+  font-size:1.75rem;
+}
+.about p {
+  max-width:700px;
+  margin:0 auto 16px;
+  color:var(--text-dim);
+  line-height:1.5;
+}
+.creator-credit {
+  margin-top:32px;
+  font-size:1.1rem;
+}
+.creator-credit strong {
+  color:var(--accent);
+}
+
+/* Footer */
+footer {
+  padding:40px 16px 80px;
+  text-align:center;
+  font-size:.9rem;
+  color:var(--text-dim);
+  background:rgba(0,0,0,.4);
+  backdrop-filter:blur(4px);
+  -webkit-backdrop-filter:blur(4px);
+}
+footer a {
+  color:var(--accent);
+  text-decoration:none;
+}
+footer a:hover {
+  text-decoration:underline;
+}
+
+/* Glitch animation (subtle) */
+@keyframes glitch {
+  0%,100% { text-shadow:0 0 8px var(--accent-glow), 0 0 2px #fff; transform:skewX(0deg); }
+  10% { text-shadow:2px 0 var(--danger), -2px 0 var(--success); transform:skewX(2deg); }
+  20% { text-shadow:-2px 0 var(--warn), 2px 0 var(--accent); transform:skewX(-2deg); }
+  30% { text-shadow:0 0 12px var(--accent-glow); }
+  40% { text-shadow:1px -1px var(--danger), -1px 1px var(--success); }
+  50% { text-shadow:0 0 8px var(--accent-glow); }
+  60% { text-shadow:-1px 1px var(--warn), 1px -1px var(--accent); }
+  70% { text-shadow:0 0 16px var(--accent-glow); }
+  80% { text-shadow:1px 0 var(--danger), -1px 0 var(--success); }
+  90% { text-shadow:0 0 8px var(--accent-glow); }
+}
+
+/* Responsive spacing adjustments */
+@media (max-width:480px){
+  .topbar h1{font-size:1.25rem;}
+  .topbar .contact{display:none;}
+  .hero{padding-top:96px;}
+}
+</style>
+</head>
+<body>
+
+<canvas id="bgCanvas" aria-hidden="true"></canvas>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="flag" title="Afghanistan Flag"><span></span></div>
+  <h1>Game Project – Coming Soon</h1>
+  <div class="contact">
+    Created by <strong>Haseebullah Mohmand</strong> · 
+    <a href="tel:+93748706723">+93 748 706 723</a>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <h2 class="hero-title" id="gameTitle">TERRA VERSE IS COMING...</h2>
+  <p class="hero-sub">A next-generation experience in development. Launching in seven years. Stay with us on the journey.</p>
+
+  <!-- COUNTDOWN -->
+  <div class="countdown-wrapper" id="countdown">
+    <div class="timer-box">
+      <span class="timer-value" id="years">--</span>
+      <span class="timer-label">Years</span>
+    </div>
+    <div class="timer-box">
+      <span class="timer-value" id="days">--</span>
+      <span class="timer-label">Days</span>
+    </div>
+    <div class="timer-box">
+      <span class="timer-value" id="hours">--</span>
+      <span class="timer-label">Hours</span>
+    </div>
+    <div class="timer-box">
+      <span class="timer-value" id="minutes">--</span>
+      <span class="timer-label">Minutes</span>
+    </div>
+    <div class="timer-box">
+      <span class="timer-value" id="seconds">--</span>
+      <span class="timer-label">Seconds</span>
+    </div>
+  </div>
+
+  <!-- ELAPSED / PROGRESS -->
+  <div class="progress-section">
+    <h3>Development Progress</h3>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <div class="progress-percent" id="progressPercent">0%</div>
+    <p id="elapsedText">Elapsed: -- days</p>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <h2>About the Game</h2>
+  <p>This is the official development countdown for an upcoming AAA game project currently under active research and world-building. Expect deep story, expansive worlds, and advanced gameplay systems.</p>
+  <p>We are building for the long term. True innovation takes time — and we are giving this project the full seven-year development cycle it deserves.</p>
+  <div class="creator-credit">
+    Created by <strong>Haseebullah Mohmand</strong> · Contact: <a href="tel:+93748706723">+93 748 706 723</a>
+  </div>
+</section>
+
+<footer>
+  &copy; <span id="yearNow"></span> Game Project. All rights reserved.  
+  | Afghanistan-based creator.  
+  | <a href="#about">About</a> · <a href="#hero">Top</a>
+</footer>
+
+<script>
+/* ============================
+   CONFIG
+   ============================ */
+/* 
+  IMPORTANT: Adjust these dates if needed.
+  We use absolute UTC equivalents so countdown is stable across time zones.
+  Asia/Kabul = UTC+04:30
+  Launch: July 21, 2032 @ 00:00 Asia/Kabul -> 2032-07-20T19:30:00Z
+  Start:  July 21, 2025 @ 00:00 Asia/Kabul -> 2025-07-20T19:30:00Z
+*/
+const launchDate = new Date('2032-07-20T19:30:00Z');   // target release
+const projectStart = new Date('2025-07-20T19:30:00Z'); // development start
+const totalDuration = launchDate - projectStart;       // total ms over 7 years
+
+/* DOM refs */
+const yearEl    = document.getElementById('years');
+const dayEl     = document.getElementById('days');
+const hourEl    = document.getElementById('hours');
+const minEl     = document.getElementById('minutes');
+const secEl     = document.getElementById('seconds');
+const progressEl= document.getElementById('progressBar');
+const progressPctEl=document.getElementById('progressPercent');
+const elapsedTextEl=document.getElementById('elapsedText');
+const yearNowEl = document.getElementById('yearNow');
+
+/* Set footer year */
+yearNowEl.textContent = new Date().getFullYear();
+
+/* Countdown function */
+function updateCountdown(){
+  const now = new Date();
+  let diff = launchDate - now;
+
+  if (diff <= 0){
+    // Launched!
+    yearEl.textContent = '0';
+    dayEl.textContent = '0';
+    hourEl.textContent = '0';
+    minEl.textContent = '0';
+    secEl.textContent = '0';
+    document.getElementById('gameTitle').textContent = 'THE GAME HAS LAUNCHED!';
+    progressEl.style.width = '100%';
+    progressPctEl.textContent = '100%';
+    elapsedTextEl.textContent = 'Development Complete!';
+    return;
+  }
+
+  // Rough conversions
+  const msPerSec = 1000;
+  const msPerMin = msPerSec * 60;
+  const msPerHour= msPerMin * 60;
+  const msPerDay = msPerHour * 24;
+  const msPerYear= msPerDay * 365.25; // average with leap years
+
+  const years = Math.floor(diff / msPerYear); diff -= years * msPerYear;
+  const days  = Math.floor(diff / msPerDay);  diff -= days * msPerDay;
+  const hours = Math.floor(diff / msPerHour); diff -= hours * msPerHour;
+  const mins  = Math.floor(diff / msPerMin);  diff -= mins * msPerMin;
+  const secs  = Math.floor(diff / msPerSec);
+
+  yearEl.textContent = years;
+  dayEl.textContent = days;
+  hourEl.textContent = hours.toString().padStart(2,'0');
+  minEl.textContent = mins.toString().padStart(2,'0');
+  secEl.textContent = secs.toString().padStart(2,'0');
+
+  // Progress
+  const elapsed = now - projectStart;
+  const pct = Math.max(0, Math.min(1, elapsed / totalDuration)) * 100;
+  progressEl.style.width = pct.toFixed(4) + '%';
+  progressPctEl.textContent = pct.toFixed(4) + '%';
+
+  // Elapsed text in days
+  const elapsedDays = Math.floor(elapsed / msPerDay);
+  elapsedTextEl.textContent = `Elapsed: ${elapsedDays.toLocaleString()} days since development start.`;
+}
+
+updateCountdown();
+setInterval(updateCountdown, 1000);
+
+/* ============================
+   PARTICLE / STARFIELD BACKGROUND
+   ============================ */
+const canvas = document.getElementById('bgCanvas');
+const ctx = canvas.getContext('2d');
+let W = canvas.width = window.innerWidth;
+let H = canvas.height = window.innerHeight;
+
+const stars = [];
+const STAR_COUNT = 150; // adjust density
+function initStars(){
+  stars.length = 0;
+  for (let i=0;i<STAR_COUNT;i++){
+    stars.push({
+      x: Math.random() * W,
+      y: Math.random() * H,
+      z: Math.random(),      // depth factor
+      r: Math.random()*1.8 + .2,
+      vx: (Math.random()-.5)*.05,
+      vy: (Math.random()-.5)*.05,
+    });
+  }
+}
+function drawStars(){
+  ctx.clearRect(0,0,W,H);
+  for (const s of stars){
+    ctx.beginPath();
+    const glow = 0.6 + 0.4*Math.sin(Date.now()/500 + s.x);
+    ctx.fillStyle = `rgba(0,234,255,${glow})`;
+    ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+    ctx.fill();
+
+    s.x += s.vx;
+    s.y += s.vy;
+    if (s.x < 0) s.x = W;
+    if (s.x > W) s.x = 0;
+    if (s.y < 0) s.y = H;
+    if (s.y > H) s.y = 0;
+  }
+  requestAnimationFrame(drawStars);
+}
+window.addEventListener('resize',()=>{
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+  initStars();
+});
+initStars();
+drawStars();
+
+/* ============================
+   OPTIONAL: TYPE-IN GAME TITLE EFFECT
+   ============================ */
+const titleEl = document.getElementById('gameTitle');
+const fullTitle = "Terra Verse IS COMING...";
+let typeIndex = 0;
+function typeTitle(){
+  if (typeIndex <= fullTitle.length){
+    titleEl.textContent = fullTitle.slice(0, typeIndex);
+    typeIndex++;
+    setTimeout(typeTitle, 80);
+  } else {
+    // after typing done, leave glitch anim
+    titleEl.textContent = fullTitle;
+  }
+}
+typeTitle();
+</script>
+
+</body>
+</html>
